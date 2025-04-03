@@ -232,6 +232,7 @@ vim.opt.rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  -- oil.nvim setup
   {
     'stevearc/oil.nvim',
     ---@module 'oil'
@@ -241,6 +242,18 @@ require('lazy').setup({
     -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
     lazy = false,
   },
+  -- live-preview.nvim setup
+  {
+    'brianhuster/live-preview.nvim',
+    dependencies = {
+      -- You can choose one of the following pickers
+      'nvim-telescope/telescope.nvim',
+      --'ibhagwan/fzf-lua',
+      --'echasnovski/mini.pick',
+    },
+  },
+  -- autotag
+  { 'windwp/nvim-ts-autotag' },
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
@@ -1120,5 +1133,32 @@ require('oil').setup {
     end,
   },
 }
-
 vim.keymap.set('n', '-', '<cmd>Oil<cr>', { desc = 'Open parent directory' })
+
+-- livepreview.nvim settings
+require('livepreview.config').set {
+  port = 5500,
+  browser = 'default',
+  sync_scroll = true,
+  picker = '',
+}
+--- Lua
+vim.o.autowriteall = true
+vim.api.nvim_create_autocmd({ 'InsertLeavePre', 'TextChanged', 'TextChangedP' }, {
+  pattern = '*',
+  callback = function()
+    vim.cmd 'silent! write'
+  end,
+})
+-- autotag
+require('nvim-ts-autotag').setup {
+  opts = {
+    -- Defaults
+    enable_close = true, -- Auto close tags
+    enable_rename = true, -- Auto rename pairs of tags
+    enable_close_on_slash = false, -- Auto close on trailing </
+  },
+  -- Also override individual filetype configs, these take priority.
+  -- Empty by default, useful if one of the "opts" global settings
+  -- doesn't work well in a specific filetype
+}
